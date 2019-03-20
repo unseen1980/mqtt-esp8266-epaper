@@ -3,15 +3,12 @@
 #include <GxEPD.h>
 #include <GxGDEW029Z10/GxGDEW029Z10.h>
 #include GxEPD_BitmapExamples
-#include <Fonts/FreeMonoBold9pt7b.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
-#include <Fonts/FreeMonoBold18pt7b.h>
-#include <Fonts/FreeMonoBold24pt7b.h>
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
-GxIO_Class io(SPI, /*CS=D8*/ SS, /*DC=D3*/ 0, /*RST=D4*/ 2); // arbitrary selection of D3(=0), D4(=2), selected for default of GxEPD_Class
-GxEPD_Class display(io, /*RST=D4*/ 2, /*BUSY=D2*/ 4); // default selection of D4(=2), D2(=4)
+GxIO_Class io(SPI, SS, 0, 2);
+GxEPD_Class display(io, 2, 4);
 
 // Update these with values suitable for your network.
 const char* ssid = "Your SSID";
@@ -76,18 +73,7 @@ void reconnect() {
   }
 }
 
-void setup() {
-  pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
-  Serial.begin(115200);
-  setup_wifi();
-  display.init(115200); // enable diagnostic output on Serial
-  Serial.println("display setup done");
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
-}
-
-void showMessage(const String name, const GFXfont* f)
-{
+void showMessage(const String name, const GFXfont* f) {
   display.fillScreen(GxEPD_WHITE);
   display.setTextColor(GxEPD_BLACK);
   display.setFont(f);
@@ -96,6 +82,16 @@ void showMessage(const String name, const GFXfont* f)
   display.println();
   display.println(name);
   display.update();
+}
+
+void setup() {
+  pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
+  Serial.begin(115200);
+  setup_wifi();
+  display.init(115200); // enable diagnostic output on Serial
+  Serial.println("display setup done");
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
 }
 
 void loop() {
